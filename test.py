@@ -3,13 +3,13 @@ from random import choices
 
 #Abby and kris are a problem
 
-def player(prev_play, opponent_history=[], Count = [{}], game = [0]):
+def player(prev_play, Previous=[""], Probs = [{}], game = [0]):
 
     OpponentChoices = ["R", "P", "S"]
     ideal_response = {'P': 'S', 'R': 'P', 'S': 'R'}
     
     if prev_play == '': # check the probability of each choice after these 2 then use that 
-        Count[0] = {"RR": {"R": 0, "P": 0, "S": 0},
+        Probs[0] = {"RR": {"R": 0, "P": 0, "S": 0},
              "RP": {"R": 0, "P": 0, "S": 0},
              "RS": {"R": 0, "P": 0, "S": 0},
              "PR": {"R": 0, "P": 0, "S": 0},
@@ -19,28 +19,23 @@ def player(prev_play, opponent_history=[], Count = [{}], game = [0]):
              "SP": {"R": 0, "P": 0, "S": 0},
              "SS": {"R": 0, "P": 0, "S": 0}}
         game[0] = 0
-        prev_play = choices(["R", "P", "S"])[0]
-        
-    opponent_history.append(prev_play)
+        prev_play = choices(OpponentChoices)[0]
+        Previous = choices(OpponentChoices)[0]
+       
     game[0] += 1
     
-    LastTwo = ''.join(opponent_history[-2:])
-    LastThree = ''.join(opponent_history[-3:])
-    if len(LastThree) == 3 and game[0] < 250 and game[0] > 3:
-        Count[0][LastThree[:-1]][prev_play] += 1
+    lastTwo = Previous + prev_play
+    if len(LastTwo) != 2:
+        LastTwo = choices(OpponentChoices)[0]+prev_play
 
-    try:
-        Guess = choices(OpponentChoices,
-                        weights=(Count[0][LastTwo]["R"], Count[0][LastTwo]["P"], Count[0][LastTwo]["S"]),
-                        k=10)
-    except:
-        Guess = choices(OpponentChoices)
+    Probs[0][LastTwo][prev_play] += 1
+    Guess = choices(OpponentChoices,
+                    weights=(Probs[0][LastTwo]["R"], Probs[0][LastTwo]["P"], Probs[0][LastTwo]["S"]),
+                    k=1)
+    
         
     MostCommon = max(set(Guess), key=Guess.count)
 
     
     #print(f"Opponent = {opponent_history[-1]} \n Player Played = {ideal_response[Guess[0]]}")
     return ideal_response[MostCommon]
-
-
-Guess = max(Count[0][LastTwo], key=Count[0][LastTwo].get) # choose values with highest proabibity not chance

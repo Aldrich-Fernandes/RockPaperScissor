@@ -2,13 +2,14 @@
 from random import choices
 
 #Abby and kris are a problem
+# resetting probabities helps improtve for aby and kris
 
-def player(prev_play, opponent_history=[], Count = [{}], game = [0]):
+def player(prev_play, opponent_history = [()], Count = [{}], game = [0]):
 
     OpponentChoices = ["R", "P", "S"]
     ideal_response = {'P': 'S', 'R': 'P', 'S': 'R'}
     
-    if prev_play == '': # check the probability of each choice after these 2 then use that 
+    if prev_play == '' or game[0] > 100: # check the probability of each choice after these 2 then use that 
         Count[0] = {"RR": {"R": 0, "P": 0, "S": 0},
              "RP": {"R": 0, "P": 0, "S": 0},
              "RS": {"R": 0, "P": 0, "S": 0},
@@ -19,25 +20,21 @@ def player(prev_play, opponent_history=[], Count = [{}], game = [0]):
              "SP": {"R": 0, "P": 0, "S": 0},
              "SS": {"R": 0, "P": 0, "S": 0}}
         game[0] = 0
-        prev_play = choices(["R", "P", "S"])[0]
+        prev_play = choices(OpponentChoices)[0]
         
-    opponent_history.append(prev_play)
-    game[0] += 1
     
-    LastTwo = ''.join(opponent_history[-2:])
-    LastThree = ''.join(opponent_history[-3:])
-    if len(LastThree) == 3 and game[0] < 250 and game[0] > 3:
-        Count[0][LastThree[:-1]][prev_play] += 1
-
+    LastTwo = opponent_history[:-2]
+    if len(LastTwo) == 2:
+        Count[0][LastTwo][prev_play] += 1
+    opponent_history.append(prev_play)
+    
     try:
         Guess = choices(OpponentChoices,
                         weights=(Count[0][LastTwo]["R"], Count[0][LastTwo]["P"], Count[0][LastTwo]["S"]),
-                        k=10)
+                        k=3)
     except:
-        Guess = choices(OpponentChoices)
-        
-    MostCommon = max(set(Guess), key=Guess.count)
-
+        Guess = choices(OpponentChoices)[0]
     
+    MostCommon = max(set(Guess), key=Guess.count)
     #print(f"Opponent = {opponent_history[-1]} \n Player Played = {ideal_response[Guess[0]]}")
-    return ideal_response[MostCommon]
+    return ideal_response[Guess]
