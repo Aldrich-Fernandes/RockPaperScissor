@@ -23,7 +23,7 @@ def player(prev_play, opponent_history = [()], Count = [{}], game = [0]):
         prev_play = choices(OpponentChoices)[0]
         
     
-    LastTwo = opponent_history[:-2]
+   LastTwo = ''.join(opponent_history[-2:])
     if len(LastTwo) == 2:
         Count[0][LastTwo][prev_play] += 1
     opponent_history.append(prev_play)
